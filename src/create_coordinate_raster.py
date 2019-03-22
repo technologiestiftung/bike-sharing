@@ -61,5 +61,5 @@ for long in second_row_longs:
     coordinates = np.array(list(zip(second_row_lats, np.repeat(long, len(second_row_lats)))))
     all_coordinates = np.append(all_coordinates, coordinates, axis = 0)
 
-np.savetxt("coordinates.csv", all_coordinates, header= 'lat, long', delimiter=",", fmt="%10.6f")
-#np.savetxt('coordinates.txt', all_coordinates, delimiter=", ", header="[", newline = "],[", footer = "]", fmt="%10.6f")
+#np.savetxt("coordinates.csv", all_coordinates, header= 'lat, long', delimiter=",", fmt="%10.6f")
+np.savetxt('coordinates.txt', all_coordinates, delimiter=", ", header="[", newline = "],[", footer = "]", fmt="%10.6f")
