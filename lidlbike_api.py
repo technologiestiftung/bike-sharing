@@ -8,7 +8,7 @@ import time
 # request data
 # TODO: use two keys
 #api key
-key='Bearer 8e06b2858f1180345db6cae467cb4bdf'
+key='Bearer xxx'
 # api-endpoint 
 URL = "https://api.deutschebahn.com/flinkster-api-ng/v1/bookingproposals"
 lat=52.520008
