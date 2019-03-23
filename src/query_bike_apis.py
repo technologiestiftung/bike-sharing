@@ -6,6 +6,7 @@ import os
 import psycopg2
 import psycopg2.extras
 import traceback
+import config
 
 # TODO: also station information
 
@@ -41,11 +42,6 @@ def get_lidlbike_locations():
     radius_center_lon=13.404954
 
     # request data
-    # api key
-    key1 ='Bearer 2e5ddcc9a03f000d8c2d023d55d2bc49'
-    key2 ='Bearer 60f9ca3996f5ee4bb8bc5ca8a25ad0af'
-
-    # api-endpoint 
     URL = "https://api.deutschebahn.com/flinkster-api-ng/v1/bookingproposals"
 
     radius=10000 # radius in meter, max 10000 (10km)
@@ -55,7 +51,7 @@ def get_lidlbike_locations():
 
     offset = 0 # mit offset Blättern
     more_bikes = True
-    key = key1
+    key = config.key1
 
     lidlbikes = []
     while more_bikes:
@@ -94,10 +90,10 @@ def get_lidlbike_locations():
 
             # 30 calls max per minute (then timeout)
             if (offset % 1500 == 0):
-                if key == key1:
-                    key = key2
+                if key == config.key1:
+                    key = config.key2
                 else: 
-                    key = key1
+                    key = config.key3
         except Exception:
             traceback.print_exc()
             # TODO: notify if error occurs
@@ -145,6 +141,7 @@ def get_mobike_locations():
     return mobikes
 
 if __name__== "__main__":
+    print (config.key1)
     # Connect to an existing database
     query_date= datetime.datetime.now()
     NEXTBIKE = 0
