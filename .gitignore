@@ -1,6 +1,5 @@
-../.DS_Store
-../.vscode/
-./
+.DS_Store
+.vscode/
 
 # config file for API keys
 config.py
