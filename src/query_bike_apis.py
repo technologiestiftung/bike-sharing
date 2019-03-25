@@ -141,7 +141,6 @@ def get_mobike_locations():
     return mobikes
 
 if __name__== "__main__":
-    print (config.key1)
     # Connect to an existing database
     query_date= datetime.datetime.now()
     NEXTBIKE = 0
@@ -153,7 +152,8 @@ if __name__== "__main__":
     mobikes = get_mobike_locations()
 
     # insert into database
-    conn = psycopg2.connect("host=localhost dbname=bikes user=postgres password=kjLdfh$7383.,jdfkwölqQH")
+    conn = psycopg2.connect("host=" + config.dbhost + " dbname=" + config.dbname + " user=" + config.dbuser + " password=" + config.dbpassword)
+    
     cur = conn.cursor()
     sql = """INSERT INTO public."bikeLocations"("id", "bikeId", "providerId", "timestamp", latitude, longitude) VALUES %s"""
     psycopg2.extras.execute_values(cur, sql, nextbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
