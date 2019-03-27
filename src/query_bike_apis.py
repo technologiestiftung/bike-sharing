@@ -7,8 +7,7 @@ import psycopg2
 import psycopg2.extras
 import traceback
 import config
-
-# TODO: also station information
+import time
 
 def get_nextbike_locations ():
 
@@ -30,7 +29,7 @@ def get_nextbike_locations ():
             lon = r['data']['bikes'][i]['lon']
             nextbikes.append([bike_id, NEXTBIKE, query_date, lat,lon])
         return nextbikes
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
         # TODO: notify if error occurs
     
@@ -89,11 +88,11 @@ def get_lidlbike_locations():
                 more_bikes = False
 
             # 30 calls max per minute (then timeout)
-            if (offset % 1500 == 0):
-                if key == config.key1:
-                    key = config.key2
-                else: 
-                    key = config.key3
+            if (offset % 3000 == 0):
+                key = config.key3
+            elif (offset % 1500 == 0):
+                key = config.key2
+
         except Exception:
             traceback.print_exc()
             # TODO: notify if error occurs
@@ -113,6 +112,7 @@ def get_mobike_locations():
         "Content-Type": "application/x-www-form-urlencoded", \
         "User-Agent" : "Mozilla/5.0 (Android 7.1.2; Pixel Build/NHG47Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.9 NTENTBrowser/3.7.0.496 (IWireless-US) Mobile Safari/537.36"}
 
+    # TODO: decide on bounding box for coordinates
     radius_centers = pd.read_csv("coordinates.csv")
 
     mobikes = []
@@ -138,9 +138,13 @@ def get_mobike_locations():
             continue
             # TODO: error handling
 
+    # delete duplicates
     return mobikes
 
 if __name__== "__main__":
+
+    start = time.perf_counter()
+
     # Connect to an existing database
     query_date= datetime.datetime.now()
     NEXTBIKE = 0
@@ -148,14 +152,22 @@ if __name__== "__main__":
     MOBIKE = 2
 
     nextbikes = get_nextbike_locations()
+    nextbike_time = time.perf_counter() - start / 60
+    # print ("nextbike time ", nextbike_time)
+
     lidlbikes = get_lidlbike_locations()
+    lidlbike_time = time.perf_counter() - nextbike_time
+    # print("lidlbike time ", lidlbike_time)
+    
     mobikes = get_mobike_locations()
+    mobike_time = time.perf_counter() - lidlbike_time
+    # print ("mobike time ", mobike_time)
 
     # insert into database
     conn = psycopg2.connect("host=" + config.dbhost + " dbname=" + config.dbname + " user=" + config.dbuser + " password=" + config.dbpassword)
     
     cur = conn.cursor()
-    sql = """INSERT INTO public."bikeLocations"("id", "bikeId", "providerId", "timestamp", latitude, longitude) VALUES %s"""
+    sql = """INSERT INTO public."bikeLocations"("id", "bikeId", "providerId", "timestamp", latitude, longitude) VALUES %s ON CONFLICT DO NOTHING"""
     psycopg2.extras.execute_values(cur, sql, nextbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
     psycopg2.extras.execute_values(cur, sql, lidlbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
     psycopg2.extras.execute_values(cur, sql, mobikes, template='(DEFAULT, %s, %s, %s, %s, %s)')

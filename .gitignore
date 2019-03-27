@@ -3,6 +3,7 @@
 
 # config file for API keys
 config.py
+config-local.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
