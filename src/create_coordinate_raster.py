@@ -18,10 +18,10 @@ coef = 2*radius * 0.0000089
 # end_long = 13.760610
 
 # small bounding box Berlin
-end_lat = 52.536654
-end_long = 13.449012
-start_lat = 52.482990
-start_long = 13.306624
+end_lat = 52.548463
+end_long = 13.472698
+start_lat = 52.468009
+start_long = 13.293994
 
 def get_new_lat(old_lat):
     return (old_lat + coef)
@@ -61,5 +61,5 @@ for long in second_row_longs:
     coordinates = np.array(list(zip(second_row_lats, np.repeat(long, len(second_row_lats)))))
     all_coordinates = np.append(all_coordinates, coordinates, axis = 0)
 
-#np.savetxt("coordinates.csv", all_coordinates, header= 'lat, long', delimiter=",", fmt="%10.6f")
-np.savetxt('coordinates.txt', all_coordinates, delimiter=", ", header="[", newline = "],[", footer = "]", fmt="%10.6f")
+np.savetxt("coordinates.csv", all_coordinates, header= 'lat, long', delimiter=",", fmt="%10.6f")
+# np.savetxt('coordinates.txt', all_coordinates, delimiter=", ", header="[", newline = "],[", footer = "]", fmt="%10.6f")
