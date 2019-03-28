@@ -8,9 +8,10 @@ import psycopg2.extras
 import traceback
 import config
 import time
+import logging
 
 def get_nextbike_locations ():
-
+    
     # request data
     URL = "https://gbfs.nextbike.net/maps/gbfs/v1/nextbike_bn/en/free_bike_status.json"
 
@@ -30,7 +31,7 @@ def get_nextbike_locations ():
             nextbikes.append([bike_id, NEXTBIKE, query_date, lat,lon])
         return nextbikes
     except Exception:
-        traceback.print_exc()
+        logging.exception("message")
         # TODO: notify if error occurs
     
 
@@ -94,14 +95,11 @@ def get_lidlbike_locations():
                 key = config.key2
 
         except Exception:
-            traceback.print_exc()
-            # TODO: notify if error occurs
+            logging.exception("message")
         
     return lidlbikes
 
 def get_mobike_locations():
-
-    # TODO: fix empty request returns
 
     # request data
     URL = "http://app.mobike.com/api/nearby/v4/nearbyBikeInfo"
@@ -112,7 +110,6 @@ def get_mobike_locations():
         "Content-Type": "application/x-www-form-urlencoded", \
         "User-Agent" : "Mozilla/5.0 (Android 7.1.2; Pixel Build/NHG47Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.9 NTENTBrowser/3.7.0.496 (IWireless-US) Mobile Safari/537.36"}
 
-    # TODO: decide on bounding box for coordinates
     radius_centers = pd.read_csv("coordinates.csv")
 
     mobikes = []
@@ -143,6 +140,8 @@ def get_mobike_locations():
 
 if __name__== "__main__":
 
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
     start = time.perf_counter()
 
     # Connect to an existing database
@@ -153,16 +152,17 @@ if __name__== "__main__":
 
     nextbikes = get_nextbike_locations()
     nextbike_time = time.perf_counter() - start / 60
-    # print ("nextbike time ", nextbike_time)
+    logger.info("nextbike time %s", nextbike_time)
 
     lidlbikes = get_lidlbike_locations()
     lidlbike_time = time.perf_counter() - nextbike_time
-    # print("lidlbike time ", lidlbike_time)
+    logger.info("lidlbike time %s", lidlbike_time)
     
     mobikes = get_mobike_locations()
     mobike_time = time.perf_counter() - lidlbike_time
-    # print ("mobike time ", mobike_time)
+    logger.info("mobike time %s", mobike_time)
 
+    db_time = time.perf_counter() - mobike_time
     # insert into database
     conn = psycopg2.connect("host=" + config.dbhost + " dbname=" + config.dbname + " user=" + config.dbuser + " password=" + config.dbpassword)
     
@@ -172,6 +172,8 @@ if __name__== "__main__":
     psycopg2.extras.execute_values(cur, sql, lidlbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
     psycopg2.extras.execute_values(cur, sql, mobikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
             
+    logger.info("write to database time: %s", db_time)     
+       
     conn.commit()
     cur.close()
     conn.close()
