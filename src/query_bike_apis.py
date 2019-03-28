@@ -151,18 +151,18 @@ if __name__== "__main__":
     MOBIKE = 2
 
     nextbikes = get_nextbike_locations()
-    nextbike_time = time.perf_counter() - start / 60
-    logger.info("nextbike time %s", nextbike_time)
+    nextbike_start= time.perf_counter()
+    logger.info("nextbike time %s", nextbike_start - start)
 
     lidlbikes = get_lidlbike_locations()
-    lidlbike_time = time.perf_counter() - nextbike_time
-    logger.info("lidlbike time %s", lidlbike_time)
+    lidlbike_start = time.perf_counter()
+    logger.info("lidlbike time %s", lidlbike_start - nextbike_start)
     
     mobikes = get_mobike_locations()
-    mobike_time = time.perf_counter() - lidlbike_time
-    logger.info("mobike time %s", mobike_time)
+    mobike_start = time.perf_counter()
+    logger.info("mobike time %s", mobike_start - lidlbike_start)
 
-    db_time = time.perf_counter() - mobike_time
+    db_time = time.perf_counter() - mobike_start
     # insert into database
     conn = psycopg2.connect("host=" + config.dbhost + " dbname=" + config.dbname + " user=" + config.dbuser + " password=" + config.dbpassword)
     
