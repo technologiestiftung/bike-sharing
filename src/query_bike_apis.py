@@ -49,7 +49,7 @@ def get_lidlbike_locations():
     expand='rentalObject'
     limit = 50
 
-    offset = 0 # mit offset Blättern
+    offset = 0 # scroll with offset through pagination
     more_bikes = True
     key = config.key1
 
@@ -173,7 +173,7 @@ if __name__== "__main__":
     psycopg2.extras.execute_values(cur, sql, mobikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
             
     logger.info("write to database time: %s", db_time)     
-       
+
     conn.commit()
     cur.close()
     conn.close()
