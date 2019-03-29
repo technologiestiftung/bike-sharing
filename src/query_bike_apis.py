@@ -139,8 +139,9 @@ def get_mobike_locations():
     return mobikes
 
 if __name__== "__main__":
-
-    logging.basicConfig(level=logging.INFO)
+    
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    logging.basicConfig(level=logging.INFO, filename="logfile.log")
     logger = logging.getLogger(__name__)
     start = time.perf_counter()
 
