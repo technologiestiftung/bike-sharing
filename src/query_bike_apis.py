@@ -32,7 +32,6 @@ def get_nextbike_locations ():
         return nextbikes
     except Exception:
         logging.exception("message")
-        # TODO: notify if error occurs
     
 
 def get_lidlbike_locations():
@@ -67,34 +66,38 @@ def get_lidlbike_locations():
             # sending get request and saving the response as response object 
             response = requests.get(url = URL, params = PARAMS, headers=headers) 
 
-            # TODO error handling
             r = response.json()
 
+            # if bad response without items then skip
+            if ('items' in r):
+                for i in range(len(r['items'])):
+                    bike_id = r['items'][i]['rentalObject']['providerRentalObjectId']
+                    
+                    # single bike have no ID (?!); skip these bikes
+                    if not bike_id:
+                        continue
+
+                    lat = r['items'][i]['position']['coordinates'][0]
+                    lon = r['items'][i]['position']['coordinates'][1]
+                    lidlbikes.append([bike_id, LIDLBIKE, query_date, lat, lon])
+
+                # get all paginations
+                offset += 50
+                if len(r['items']) < 50:
+                    more_bikes = False
+
+                # 30 calls max per minute (then timeout)
+                if (offset % 3000 == 0):
+                    key = config.key3
+                elif (offset % 1500 == 0):
+                    key = config.key2
             
-
-            for i in range(len(r['items'])):
-                bike_id = r['items'][i]['rentalObject']['providerRentalObjectId']
-                
-                # single bike have no ID (?!); skip these bikes
-                if not bike_id:
-                    continue
-
-                lat = r['items'][i]['position']['coordinates'][0]
-                lon = r['items'][i]['position']['coordinates'][1]
-                lidlbikes.append([bike_id, LIDLBIKE, query_date, lat, lon])
-
-            # get all paginations
-            offset += 50
-            if len(r['items']) < 50:
+            else:
                 more_bikes = False
 
-            # 30 calls max per minute (then timeout)
-            if (offset % 3000 == 0):
-                key = config.key3
-            elif (offset % 1500 == 0):
-                key = config.key2
 
         except Exception:
+            more_bikes = False
             logging.exception("message")
         
     return lidlbikes
@@ -153,15 +156,12 @@ if __name__== "__main__":
 
     nextbikes = get_nextbike_locations()
     nextbike_start= time.perf_counter()
-    logger.info("nextbike time %s", nextbike_start - start)
 
     lidlbikes = get_lidlbike_locations()
     lidlbike_start = time.perf_counter()
-    logger.info("lidlbike time %s", lidlbike_start - nextbike_start)
     
     mobikes = get_mobike_locations()
     mobike_start = time.perf_counter()
-    logger.info("mobike time %s", mobike_start - lidlbike_start)
 
     db_time = time.perf_counter() - mobike_start
     # insert into database
@@ -173,8 +173,6 @@ if __name__== "__main__":
     psycopg2.extras.execute_values(cur, sql, lidlbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
     psycopg2.extras.execute_values(cur, sql, mobikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
             
-    logger.info("write to database time: %s", db_time)     
-
     conn.commit()
     cur.close()
     conn.close()
