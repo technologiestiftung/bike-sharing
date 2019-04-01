@@ -124,21 +124,24 @@ def get_mobike_locations():
         response = requests.get(url = URL, params = PARAMS, headers = headers) 
 
         #Todo error handling
-        r = response.json()
+        try:
+            r = response.json()
 
-        if r['code'] == 0:
-           
-            for i in range(len(r['bike'])):
-                bike_id = r['bike'][i]['distId'][1:]
-                lat = r['bike'][i]['distY']
-                lon = r['bike'][i]['distX']
-                mobikes.append([bike_id, MOBIKE, query_date, lat, lon])
+            # if no error is returned, get bike information
+            if r['code'] == 0:
+            
+                for i in range(len(r['bike'])):
+                    bike_id = r['bike'][i]['distId'][1:]
+                    lat = r['bike'][i]['distY']
+                    lon = r['bike'][i]['distX']
+                    mobikes.append([bike_id, MOBIKE, query_date, lat, lon])
+            
+            else:
+                continue
         
-        else:
-            continue
-            # TODO: error handling
-
-    # delete duplicates
+        except Exception:
+            logging.exception("message")
+        
     return mobikes
 
 if __name__== "__main__":
