@@ -55,7 +55,7 @@ def get_data(token):
         bike_id = r['data']['attributes']['bikes'][i]['id']
         bike_lat = r['data']['attributes']['bikes'][i]['attributes']['latitude']
         bike_lon = r['data']['attributes']['bikes'][i]['attributes']['longitude']
-        limebikes.append([bike_lat, bike_lon])
+        limebikes.append([bike_id, bike_lat, bike_lon])
 
     pd.DataFrame(limebikes).to_csv('limebikes_output.csv', index=False)
                     
