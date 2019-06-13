@@ -1,6 +1,6 @@
 # bike-sharing
 
-API requests to receive all current locations of bikes from nextbike, lidlbike and mobike in Berlin.
+API requests to receive all current locations of bikes from nextbike, lidlbike and mobike in Berlin (inner circle) and store them into a single database.
 
 Add config.py file to src/ with API Keys for Deutsche Bahn API (https://developer.deutschebahn.com/store/) and database credentials.
 
