@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<head> <style>
+    body {font-family: 'Abel', sans-serif;}
+    html, body, #mapid {
+        height: 93%;
+        width: 100%;
+    }
+</style>
+<meta charset="UTF-8"> 
+<html>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+crossorigin=""/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+crossorigin=""></script>
+
+<!-- Awesome Markers -->
+<link rel="stylesheet" href="css/leaflet.awesome-markers.css">
+<script src="js/leaflet.awesome-markers.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+
+<!-- Load Esri Leaflet from CDN -->
+<script src="https://unpkg.com/esri-leaflet@2.2.4/dist/esri-leaflet.js"
+integrity="sha512-tyPum7h2h36X52O2gz+Pe8z/3l+Y9S1yEUscbVs5r5aEY5dFmP1WWRY/WLLElnFHa+k1JBQZSCDGwEAnm2IxAQ=="
+crossorigin=""></script>
+
+
+<!-- Load Esri Leaflet Geocoder from CDN -->
+<link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.13/dist/esri-leaflet-geocoder.css"
+integrity="sha512-v5YmWLm8KqAAmg5808pETiccEohtt8rPVMGQ1jA6jqkWVydV5Cuz3nJ9fQ7ittSxvuqsvI9RSGfVoKPaAJZ/AQ=="
+crossorigin="">
+<script src="https://unpkg.com/esri-leaflet-geocoder@2.2.13/dist/esri-leaflet-geocoder.js"
+integrity="sha512-zdT4Pc2tIrc6uoYly2Wp8jh6EPEWaveqqD3sT0lf5yei19BC1WulGuh5CesB0ldBKZieKGD7Qyf/G0jdSe016A=="
+crossorigin=""></script>
+<script src= "https://unpkg.com/papaparse@4.6.3/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet">
+
+<!-- Load Omnivore plugin to convert CSV to GeoJSON format -->
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+
+
+</head>
+<body>
+    <div class="headline">
+    </div>
+    <div id="mapid"></div>
+    
+    <script>
+        var map = L.map('mapid').setView([52.483965, 13.387768],14);
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            accessToken: 'pk.eyJ1IjoibHhuZHJrcCIsImEiOiJjanRoZDBlaGgwdGh4NDNydWhwbHo4ZXdsIn0.iCdQLK7JUYDX-JuNwzZnsw'
+        }).addTo(map);
+        
+        var nextbike_icon = L.AwesomeMarkers.icon({
+            prefix: 'fa',
+            icon: 'bicycle',
+            markerColor: 'darkblue'
+        });
+        
+        var mobike_icon = L.AwesomeMarkers.icon({
+            prefix: 'fa',
+            icon: 'bicycle',
+            markerColor: 'orange'
+        });
+        
+        var lidl_icon = L.AwesomeMarkers.icon({
+            prefix: 'fa',
+            icon: 'bicycle',
+            markerColor: 'green'
+        });
+        
+        
+        var nextbike_layer = omnivore.csv('nextbikes.csv', null)
+        .on('ready', function(layer) {
+            nextbike_layer.eachLayer(function(layer) {
+                
+                if (layer instanceof L.Marker) {
+                    layer.setIcon(nextbike_icon);
+                }
+            });  
+        }).addTo(map);
+        
+        var lidlbike_layer = omnivore.csv('lidlbikes.csv', null)
+        .on('ready', function(layer) {
+            lidlbike_layer.eachLayer(function(layer) {
+                
+                if (layer instanceof L.Marker) {
+                    layer.setIcon(lidl_icon);
+                }
+            });  
+        }).addTo(map);
+
+        var mobike_layer = omnivore.csv('mobikes.csv', null)
+        .on('ready', function(layer) {
+            mobike_layer.eachLayer(function(layer) {
+                
+                if (layer instanceof L.Marker) {
+                    layer.setIcon(mobike_icon);
+                }
+            });  
+        }).addTo(map);
+        
+    </script>
+    
+</body>
+</html>

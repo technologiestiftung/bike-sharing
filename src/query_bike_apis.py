@@ -159,12 +159,17 @@ if __name__== "__main__":
 
     nextbikes = get_nextbike_locations()
     nextbike_start= time.perf_counter()
+    # pd.DataFrame(nextbikes).to_csv('nextbikes.csv')
 
     lidlbikes = get_lidlbike_locations()
     lidlbike_start = time.perf_counter()
+    # pd.DataFrame(lidlbikes).to_csv('lidlbikes.csv')
+
     
     mobikes = get_mobike_locations()
     mobike_start = time.perf_counter()
+    # pd.DataFrame(mobikes).to_csv('mobikes.csv')
+
 
     db_time = time.perf_counter() - mobike_start
     # insert into database
