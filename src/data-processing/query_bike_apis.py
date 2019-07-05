@@ -61,7 +61,8 @@ def get_lidlbike_locations():
             headers = {"Authorization": key, "Accept": "application/json"}
 
             # defining a params dict for the parameters to be sent to the API 
-            PARAMS = {'lat':radius_center_lat, 'lon':radius_center_lon, 'radius':radius, 'providernetwork':providernetwork, 'expand':expand, 'limit':limit, 'offset':offset} 
+            PARAMS = {'lat':radius_center_lat, 'lon':radius_center_lon, 'radius':radius, 'providernetwork':providernetwork, 'expand':expand, '
+                      ':limit, 'offset':offset} 
 
             # sending get request and saving the response as response object 
             response = requests.get(url = URL, params = PARAMS, headers=headers) 
@@ -77,8 +78,8 @@ def get_lidlbike_locations():
                     if not bike_id:
                         continue
 
-                    lat = r['items'][i]['position']['coordinates'][0]
-                    lon = r['items'][i]['position']['coordinates'][1]
+                    lat = r['items'][i]['position']['coordinates'][1]
+                    lon = r['items'][i]['position']['coordinates'][0]
                     lidlbikes.append([bike_id, LIDLBIKE, query_date, lat, lon])
 
                 # get all paginations
