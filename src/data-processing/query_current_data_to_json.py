@@ -3,11 +3,8 @@ import numpy as np
 import json
 import psycopg2
 from psycopg2.extras import RealDictCursor
-
-dbhost = 'localhost'
-dbname = 'backup-bikes'
-dbuser = 'postgres'
-dbpassword = 'Spuck8/Crews'
+import datetime
+import config
 
 def preprocess(df):
     
@@ -34,6 +31,8 @@ def preprocess(df):
     
     # delete last instances of all bikes
     df = df[df.next_lat.notnull()]
+    
+    
     return df
 
 sql = """
@@ -41,13 +40,40 @@ SELECT id, "bikeId", "providerId", "timestamp", latitude, longitude
 	FROM public."bikeLocations"
 	WHERE ("timestamp" >  current_date - INTERVAL '1 day') and ("timestamp" < current_date);
 """
-    
-conn = psycopg2.connect("host=" + dbhost + " dbname=" + dbname + " user=" + dbuser + " password=" + dbpassword)
+
+def cleaning(df):
+    # switch lat lon where it's wrong (for Berlin)
+    temp = df['latitude']
+    df.loc[(df.latitude < 15),'latitude'] = df.loc[(df.latitude < 15),'longitude']
+    df.loc[(df.latitude < 15),'longitude'] = temp
+
+    # delete instances with unplausible locations
+    df.drop(df[df.longitude > 13.7].index, inplace=True)
+    df.drop(df[df.next_lon > 13.7].index, inplace=True)
+
+    df.drop(df[df.longitude < 13.0].index, inplace=True)
+    df.drop(df[df.next_lon < 13.0].index, inplace=True)
+
+    df.drop(df[df.latitude > 52.7].index, inplace=True)
+    df.drop(df[df.next_lat > 52.7].index, inplace=True)
+
+    df.drop(df[df.latitude < 52.3].index, inplace=True)
+    df.drop(df[df.next_lat < 52.3].index, inplace=True)
+
+    df['duration'] = df.end_timestamp - df.timestamp
+
+    # drop bikeId for pseudonymisation
+    df.drop('bikeId', axis=1, inplace=True)
+    return df
+
+
+conn = psycopg2.connect("host=" + config.dbhost + " dbname=" + config.dbname + " user=" + config.dbuser + " password=" + config.dbpassword)
 cur = conn.cursor(cursor_factory=RealDictCursor)
 cur.execute(sql)
 
-date = '2019-x-x'
+date = str(datetime.datetime.today().strftime('%Y-%m-%d'))
 df = pd.DataFrame(cur.fetchall())
 df = preprocess(df)
-df.to_json('../../../html/bike-data/data-' + date + '.json', orient='records')
+df = cleaning(df)
+df.to_json('../../../html/bike-data/' + date + '-data.json', orient='records')
 # 
