@@ -1,0 +1,4 @@
+select Count("bikeId"), "providerId", timestamp
+from "bikeLocations"
+group by timestamp, "providerId"
+order by timestamp desc
