@@ -2,6 +2,7 @@ old/
 data/
 .DS_Store
 .vscode/
+node_modules
 
 # config file for API keys
 config.py
