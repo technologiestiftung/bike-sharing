@@ -1,6 +1,5 @@
 import requests 
 import json
-import pandas as pd
 import datetime
 import os
 import psycopg2
@@ -21,11 +20,12 @@ def get_nextbike_locations ():
         r = response.json()
         nextbikes = []
         for i in range(len(r['data']['bikes'])):
-            bike_id = int(r['data']['bikes'][i]['bike_id'])
-
-             # single bike have no ID (?!); skip these bikes
-            if not bike_id:
+            try:
+                bike_id = int(r['data']['bikes'][i]['bike_id'])
+            except:
+                # single bike have no ID (?!); skip these bikes
                 continue
+            
             lat = r['data']['bikes'][i]['lat']
             lon = r['data']['bikes'][i]['lon']
             nextbikes.append([bike_id, NEXTBIKE, query_date, lat,lon])
@@ -61,8 +61,8 @@ def get_lidlbike_locations():
             headers = {"Authorization": key, "Accept": "application/json"}
 
             # defining a params dict for the parameters to be sent to the API 
-            PARAMS = {'lat':radius_center_lat, 'lon':radius_center_lon, 'radius':radius, 'providernetwork':providernetwork, 'expand':expand, '
-                      ':limit, 'offset':offset} 
+            PARAMS = {'lat':radius_center_lat, 'lon':radius_center_lon, 'radius':radius, 'providernetwork':providernetwork, 'expand':expand, 
+            'limit':limit, 'offset':offset} 
 
             # sending get request and saving the response as response object 
             response = requests.get(url = URL, params = PARAMS, headers=headers) 
@@ -150,7 +150,6 @@ if __name__== "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     logging.basicConfig(level=logging.INFO, filename="logfile.log")
     logger = logging.getLogger(__name__)
-    start = time.perf_counter()
 
     # Connect to an existing database
     query_date= datetime.datetime.now()
@@ -159,20 +158,13 @@ if __name__== "__main__":
     MOBIKE = 2
 
     nextbikes = get_nextbike_locations()
-    nextbike_start= time.perf_counter()
-    # pd.DataFrame(nextbikes).to_csv('nextbikes.csv')
 
     lidlbikes = get_lidlbike_locations()
-    lidlbike_start = time.perf_counter()
-    # pd.DataFrame(lidlbikes).to_csv('lidlbikes.csv')
 
     
-    mobikes = get_mobike_locations()
-    mobike_start = time.perf_counter()
-    # pd.DataFrame(mobikes).to_csv('mobikes.csv')
+    #mobikes = get_mobike_locations()
 
 
-    db_time = time.perf_counter() - mobike_start
     # insert into database
     conn = psycopg2.connect("host=" + config.dbhost + " dbname=" + config.dbname + " user=" + config.dbuser + " password=" + config.dbpassword)
     
@@ -180,7 +172,7 @@ if __name__== "__main__":
     sql = """INSERT INTO public."bikeLocations"("id", "bikeId", "providerId", "timestamp", latitude, longitude) VALUES %s ON CONFLICT DO NOTHING"""
     psycopg2.extras.execute_values(cur, sql, nextbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
     psycopg2.extras.execute_values(cur, sql, lidlbikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
-    psycopg2.extras.execute_values(cur, sql, mobikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
+    #psycopg2.extras.execute_values(cur, sql, mobikes, template='(DEFAULT, %s, %s, %s, %s, %s)')
             
     conn.commit()
     cur.close()
