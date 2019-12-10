@@ -32,9 +32,9 @@ E.g. this setup
 
 **CRON JOBS**
 
-*/4 * * * * python3 [PATH TO FOLDER]/src/query_bike_apis.py
-0 8 * * * python3 [PATH TO FOLDER]/src/query_nextbike_stations.py
-0 23 * * * python3 [PATH TO FOLDER]/src/clean_script.py
+        */4 * * * * python3 [PATH TO FOLDER]/src/query_bike_apis.py
+        0 8 * * * python3 [PATH TO FOLDER]/src/query_nextbike_stations.py
+        0 23 * * * python3 [PATH TO FOLDER]/src/clean_script.py
 
 
 ### Query other cities or providers
