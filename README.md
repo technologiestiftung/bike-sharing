@@ -3,9 +3,14 @@
 ## Data Collection
 src/data-preprocessing
 
+**Script src/data-processing/query_bike_apis.py is used to query provider API data**
 API requests to receive all current locations of bikes from nextbike, lidlbike and mobike in Berlin (inner circle) and store them into a single database.
 
-Add config.py file to src/ with API Keys for Deutsche Bahn API (https://developer.deutschebahn.com/store/) and database credentials.
+Add config.py file to src/ with API Keys for Deutsche Bahn API (https://developer.deutschebahn.com/store/) and database credentials. (see Example **src/data-processing/config-example.py**)
+
+### Query other cities or providers
+To query APIs for different cities the *src/data-processing/query_bike_apis.py* script has to be adapted accordingly.
+To query other providers [this documentation](https://github.com/ubahnverleih/WoBike/) is a good source of information.
 
 For access to lime bike API insert phone_no to config.py and follow steps in lime_access.py (three manual steps required).
 
