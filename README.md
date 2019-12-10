@@ -8,6 +8,19 @@ src/data-preprocessing
 - setup the script on a server
 - run script automated with a cron job
 
+### Prerequisites
+
+- Python 3.6
+- Libraries: 
+    - requests
+    - psycopg2
+
+
+install packages: 
+
+    cd src/data-preprocessing
+    pip install -r requirements.txt
+
 ### Scripts 
 
 **SQL Script [create_bikeDB.sql](https://github.com/technologiestiftung/bike-sharing/blob/master/src/sql-scripts/create_bikeDB.sql) to create the database scheme**
@@ -21,7 +34,7 @@ API requests to receive all current locations of bikes from nextbike, lidlbike a
 **Script [query_nextbike_stations.py](https://github.com/technologiestiftung/bike-sharing/blob/master/src/data-processing/query_nextbike_stations.py) is used to query the stations of nextbike**
 
 **Config File**
-Add config.py file to src/ with API Keys for Deutsche Bahn API (https://developer.deutschebahn.com/store/) and database credentials. (see Example **[config-example.py](https://github.com/technologiestiftung/bike-sharing/blob/master/src/data-processing/config-example.py)**)
+Add config.py file to src/data-preprocessing with API Keys for Deutsche Bahn API (https://developer.deutschebahn.com/store/) and database credentials. (see Example **[config-example.py](https://github.com/technologiestiftung/bike-sharing/blob/master/src/data-processing/config-example.py)**)
 
 ## Run script automized
 Set up a cron job that runs the script in regular intervalls. 
