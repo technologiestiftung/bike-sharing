@@ -2,7 +2,6 @@
 
 ## Data Collection
 src/data-preprocessing
-## Setup
 
 ### Overview
 - create a database
