@@ -2,11 +2,38 @@
 
 ## Data Collection
 src/data-preprocessing
+## Setup
+
+### Overview
+- create a database
+- setup the script on a server
+- run script automated with a cron job
+
+### Scripts 
+
+**SQL Script /src/sql-scripts/create_bikeDB.sql to create the database scheme**
+Create a database where the data queried in the script is being stored.
 
 **Script src/data-processing/query_bike_apis.py is used to query provider API data**
 API requests to receive all current locations of bikes from nextbike, lidlbike and mobike in Berlin (inner circle) and store them into a single database.
 
+**Script /src/query_nextbike_stations.py is used to query the stations of nextbike**
+
 Add config.py file to src/ with API Keys for Deutsche Bahn API (https://developer.deutschebahn.com/store/) and database credentials. (see Example **src/data-processing/config-example.py**)
+
+## Run script automized
+Set up a cron job that runs the script in regular intervalls. 
+E.g. this setup 
+- runs the *query_bike_apis.py* script every 4 minutes
+- runs the *query_nextbike_stations.py* script once a day at 8 AM
+- runs a cleaning script on the database (*/src/clean_script.py*) once a day at 11 PM deleting all unnecessary rows in the database.
+
+**CRON JOBS**
+
+*/4 * * * * python3 [PATH TO FOLDER]/src/query_bike_apis.py
+0 8 * * * python3 [PATH TO FOLDER]/src/query_nextbike_stations.py
+0 23 * * * python3 [PATH TO FOLDER]/src/clean_script.py
+
 
 ### Query other cities or providers
 To query APIs for different cities the *src/data-processing/query_bike_apis.py* script has to be adapted accordingly.
